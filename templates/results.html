@@ -1,0 +1,29 @@
+{% extends '.layout.html' %}
+
+{% block title %}Search Results | {% endblock %}
+
+{% block main %}
+<section class="w-full min-h-screen py-24">
+    <section class="md:w-2/4 w-full mx-auto px-2">
+        <a href="/" class="text-sm mb-2 block"><i class="fa-solid fa-arrow-left mr-2"></i> Back to homepage</a>
+        <h1 class="text-xl mb-10">Search Results</h1>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {% for video in results %}
+            <div class="items-start bg-white">
+                <img src="{{ video['thumbnails'][0]['url'] }}" alt="Thumbnail" class="w-full h-auto">
+                <div class="pt-2">
+                    <h3 class="text-md font-semibold h-[5ch] overflow-y-hidden">{{ video['title'] }}</h3>
+                    <p class="text-sm text-gray-500">Duration: {{ video['duration'] }}</p>
+                    <p class="text-sm text-gray-500 mb-1">Views: {{ video['viewCount']['short'] }}</p>
+                    {% if video['link'] %}
+                    <a href="{{ url_for('video', url=video['link']) }}" class="text-sm py-1 px-2 bg-red-500 text-white inline-block rounded">View Details & Download <i class="fa-solid fa-arrow-right"></i></a>
+                    {% else %}
+                    <a href="{{ url_for('video', url='https://www.youtube.com/watch?v=' + video['id']) }}" class="text-sm py-1 px-2 bg-red-500 text-white inline-block rounded">View Details & Download <i class="fa-solid fa-arrow-right"></i></a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+</section>
+{% endblock %}
