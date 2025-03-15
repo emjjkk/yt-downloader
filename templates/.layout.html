@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}Youtube Downloader</title>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <script src="https://kit.fontawesome.com/0e515ca39f.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='common.css') }}">
+</head>
+<body>
+    {% block main %}{% endblock %}
+    <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+</body>
+</html>
