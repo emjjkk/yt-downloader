@@ -1,0 +1,15 @@
+{% extends '.layout.html' %}
+
+{% block main %}
+<section class="w-full h-screen flex flex-col items-center justify-center">
+    <h1 class="text-2xl text-red-500"><i class="fa-brands fa-youtube mr-2 mb-5"></i>emjjkk/yt-downloader</h1>
+    <form class="flex items-center justify-center w-[70%] mb-5" action="{{ url_for('process') }}" method="POST">
+        <input type="text" name="query" id="query" placeholder="Search or enter Youtube URL" class="px-4 py-2 text-md bg-gray-200 w-3/4 text-center">
+        <button type="submit" class="py-2 px-3 text-md bg-red-500 ml-2"><i class="fa-solid fa-arrow-right text-white"></i></button>
+    </form>
+    <p class="text-sm text-gray-500 text-center">
+        For personal use only. Respect Youtube's guidelines, content creators, and don't be shitty.
+        <br>In case of technical issues reach out on discord (@e.mjjkk) or try fix it on Github (emjjkk/yt-downloader)
+    </p>
+</section>
+{% endblock %}
