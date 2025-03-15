@@ -15,12 +15,14 @@ def download_with_yt_dlp(url, download_type, progress_callback=None):
     """
     if download_type == 'video':
         ydl_opts = {
+            'cookiefile': '/cookies.txt',
             'format': 'best[ext=mp4][vcodec!=none][acodec!=none]',
             'outtmpl': '%(id)s.%(ext)s',
             'progress_hooks': [progress_callback] if progress_callback else []
         }
     elif download_type == 'audio':
         ydl_opts = {
+            'cookiefile': '/cookies.txt',
             'format': 'bestaudio/best',
             'outtmpl': '%(id)s.%(ext)s',
             'progress_hooks': [progress_callback] if progress_callback else []
@@ -38,6 +40,7 @@ def get_video_info(url):
     Extracts video information without downloading using yt-dlp.
     """
     ydl_opts = {
+        'cookiefile': 'cookies.txt',
         'quiet': True,
         'skip_download': True,
         'no_warnings': True
