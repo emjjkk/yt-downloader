@@ -3,8 +3,39 @@ from youtubesearchpython import VideosSearch
 import yt_dlp
 import os
 import json
+from playwright.sync_api import sync_playwright
 
 app = Flask(__name__)
+
+def extract_youtube_cookies():
+    """
+    Extracts cookies for youtube.com using Playwright.
+    Returns a dictionary of cookies if the user is logged in, otherwise None.
+    """
+    try:
+        with sync_playwright() as p:
+            # Launch a browser instance
+            browser = p.chromium.launch(headless=False)  # Set headless=False to see the browser
+            context = browser.new_context()
+            page = context.new_page()
+
+            # Navigate to YouTube
+            page.goto('https://www.youtube.com')
+
+            # Wait for the page to load (you can add more sophisticated waiting logic)
+            page.wait_for_timeout(5000)  # Wait for 5 seconds
+
+            # Extract cookies for youtube.com
+            cookies = context.cookies()
+            youtube_cookies = {cookie['name']: cookie['value'] for cookie in cookies if 'youtube.com' in cookie['domain']}
+
+            # Close the browser
+            browser.close()
+
+            return youtube_cookies if youtube_cookies else None
+    except Exception as e:
+        print(f"Error extracting cookies: {e}")
+        return None
 
 def download_with_yt_dlp(url, download_type, progress_callback=None):
     """
@@ -13,22 +44,30 @@ def download_with_yt_dlp(url, download_type, progress_callback=None):
     progress_callback: A callback function to report progress.
     Returns the downloaded filename.
     """
+    # Try to extract cookies dynamically
+    cookies = extract_youtube_cookies()
+
     if download_type == 'video':
         ydl_opts = {
-            'cookiefile': 'cookies.txt',
             'format': 'best[ext=mp4][vcodec!=none][acodec!=none]',
             'outtmpl': '%(id)s.%(ext)s',
             'progress_hooks': [progress_callback] if progress_callback else []
         }
     elif download_type == 'audio':
         ydl_opts = {
-            'cookiefile': 'cookies.txt',
             'format': 'bestaudio/best',
             'outtmpl': '%(id)s.%(ext)s',
             'progress_hooks': [progress_callback] if progress_callback else []
         }
     else:
         raise ValueError("Invalid download type specified.")
+
+    # Use extracted cookies if available, otherwise fall back to cookies.txt
+    if cookies:
+        ydl_opts['cookiefile'] = None
+        ydl_opts['cookies'] = cookies
+    else:
+        ydl_opts['cookiefile'] = 'cookies.txt'
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(url, download=True)
@@ -39,12 +78,22 @@ def get_video_info(url):
     """
     Extracts video information without downloading using yt-dlp.
     """
+    # Try to extract cookies dynamically
+    cookies = extract_youtube_cookies()
+
     ydl_opts = {
-        'cookiefile': 'cookies.txt',
         'quiet': True,
         'skip_download': True,
         'no_warnings': True
     }
+
+    # Use extracted cookies if available, otherwise fall back to cookies.txt
+    if cookies:
+        ydl_opts['cookiefile'] = None
+        ydl_opts['cookies'] = cookies
+    else:
+        ydl_opts['cookiefile'] = 'cookies.txt'
+
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(url, download=False)
     return info
